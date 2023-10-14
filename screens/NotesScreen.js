@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, FlatList, Pressable } from "react-native";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, AntDesign } from "@expo/vector-icons";
 
 import * as SQLite from "expo-sqlite";
 
@@ -92,6 +92,16 @@ export default function NotesScreen({ navigation, route }) {
     navigation.navigate("Add Note");
   }
 
+  function deleteNote(note) {
+    db.transaction(
+      (tx) => {
+        tx.executeSql("delete from notes where id = ?", [note.id]);
+      },
+      null,
+      refreshNotes
+    );
+  }
+
   function renderItem({ item }) {
     return (
       <View
@@ -101,9 +111,14 @@ export default function NotesScreen({ navigation, route }) {
           paddingBottom: 20,
           borderBottomColor: "#ccc",
           borderBottomWidth: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
         <Text style={{ textAlign: "left", fontSize: 16 }}>{item.title}</Text>
+        <Pressable onPress={() => deleteNote(item)}>
+          <AntDesign name="delete" size={24} color="black" />
+        </Pressable>
       </View>
     );
   }
